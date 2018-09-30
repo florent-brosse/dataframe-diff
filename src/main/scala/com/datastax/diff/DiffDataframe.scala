@@ -26,11 +26,11 @@ object DiffDataframe {
     val otherColumnsIsNotEquals = otherColumns.map(colName => cached("new." + colName) notEqual (cached("old." + colName)))
     val otherColumnsIsNotEqualsCol = otherColumnsIsNotEquals.reduce((a, b) => a.or(b))
 
-    val newRows = cached.filter(pkColIsNullOld).select("new.*").cache
+    val newRows = cached.filter(pkColIsNullOld).select("new.*")
 
-    val deleteRows = cached.filter(pkColIsNullNew).select("old.*").select(pks.head, pks.tail: _*).cache
+    val deleteRows = cached.filter(pkColIsNullNew).select("old.*").select(pks.head, pks.tail: _*)
 
-    val updateRows = cached.filter(joinPkCol and otherColumnsIsNotEqualsCol).select("new.*").cache
+    val updateRows = cached.filter(joinPkCol and otherColumnsIsNotEqualsCol).select("new.*")
     (newRows, deleteRows, updateRows)
   }
 
