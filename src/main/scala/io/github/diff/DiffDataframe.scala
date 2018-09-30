@@ -1,12 +1,21 @@
-package com.datastax.diff
+package io.github.diff
 
 import org.apache.spark.sql.DataFrame
 
 object DiffDataframe {
-
+  /**
+    *
+    * df1 is the previous dataframe
+    * df2 is the new dataframe
+    * pks is the seq of the primary keys
+    *
+    * If df1 and df2 have a column name with a dot it will be replace by a underscore
+    *
+    */
   def diff(df1: DataFrame, df2: DataFrame, pks: Seq[String]) = {
-    val dfOld = df1.alias("old")
-    val dfNew = df2.alias("new")
+    val dfOld = df1.toDF(df1.columns.map(_.replace(".", "_")): _*).alias("old")
+
+    val dfNew = df2.toDF(df2.columns.map(_.replace(".", "_")): _*).alias("new")
 
     assert(dfOld.columns sameElements dfNew.columns)
     assert(pks.toSet subsetOf dfOld.columns.toSet)
