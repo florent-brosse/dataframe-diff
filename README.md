@@ -5,7 +5,7 @@ It takes 2 dataframes and a list of string corresponding to the primary keys and
 
 To use it:
 ```
-val pks = Seq("id", "id2")
+val pks = Set("id", "id2")
 
 val values = Seq(
       (8, 1, "bat", "2"),

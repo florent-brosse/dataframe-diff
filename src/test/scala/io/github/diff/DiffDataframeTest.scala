@@ -20,7 +20,7 @@ class DiffDataframeTest extends FunSuite {
 
     import spark.implicits._
 
-    val pks = Seq("id", "id2")
+    val pks = Set("id", "id2")
 
     val values = Seq(
       (8, 1, "bat", "2"),
@@ -34,15 +34,15 @@ class DiffDataframeTest extends FunSuite {
       (-27, 1, "horse", "3")
     )
 
-    val (newRows, deleteRows, updateRows) = DiffDataframe.diff(values.toDF("id", "id2", "w.ord", "data"), values2.toDF("id", "id2", "w.ord", "data"), pks)
+    val (newRows, deleteRows, updateRows) = DiffDataframe.diff(values.toDF("id", "id2", "w.ord", "d ata"), values2.toDF("id", "id2", "w.ord", "d ata"), pks)
 
-    val newRowsExpected= Seq((63, 1, "mouse", "2")).toDF("id", "id2", "w_ord", "data")
+    val newRowsExpected= Seq((63, 1, "mouse", "2")).toDF("id", "id2", "w_ord", "d_ata")
     assert(newRowsExpected.collect() sameElements newRows.collect())
 
     val deleteRowsExpected= Seq((64, 1)).toDF("id", "id2")
     assert(deleteRowsExpected.collect() sameElements deleteRows.collect())
 
-    val updateRowsExpected= Seq((8, 1, "bat", "1")).toDF("id", "id2", "w_ord", "data")
+    val updateRowsExpected= Seq((8, 1, "bat", "1")).toDF("id", "id2", "w_ord", "d_ata")
     assert(updateRowsExpected.collect() sameElements updateRows.collect())
   }
 }
