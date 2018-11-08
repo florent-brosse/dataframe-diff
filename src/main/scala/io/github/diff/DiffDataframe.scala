@@ -79,7 +79,7 @@ object DiffDataframe {
     (newRows, deleteRows, updateRowsWithOnlyNeedColumns)
   }
 
-  def structIsMapOrContainsMap(structField: StructField): Boolean = {
+  private def structIsMapOrContainsMap(structField: StructField): Boolean = {
     structField.dataType.typeName match {
       case "map" => true
       case "struct" => structField.dataType.asInstanceOf[StructType].exists(structIsMapOrContainsMap(_))
@@ -87,7 +87,7 @@ object DiffDataframe {
     }
   }
 
-  def filterCustom (row :Row)(otherColumnsWithoutIgnored :Set[String]): Boolean ={
+  private def filterCustom (row :Row)(otherColumnsWithoutIgnored :Set[String]): Boolean ={
     val fieldNames = row.schema.fieldNames
     for (columnName <- otherColumnsWithoutIgnored) {
       val firstIndexOfColumn = fieldNames.indexOf(columnName)
