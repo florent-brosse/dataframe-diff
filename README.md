@@ -22,3 +22,7 @@ val values2 = Seq(
 val (newRows, deleteRows, updateRows) = DiffDataframe.diff(values.toDF("id", "id2", "word", "data"), 
       values2.toDF("id", "id2", "word", "data"), pks)
 ```
+
+To lanch test with maven
+`JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/ PATH=$JAVA_HOME/bin:$PATH mvn clean test`
+
