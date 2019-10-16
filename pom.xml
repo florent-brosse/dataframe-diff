@@ -4,7 +4,7 @@
 
     <groupId>io.github.florent-brosse</groupId>
     <artifactId>dataframe-diff</artifactId>
-    <version>1.1</version>
+    <version>1.1-SNAPSHOT</version>
 
 
     <name>${project.artifactId}</name>
