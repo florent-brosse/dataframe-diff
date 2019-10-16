@@ -68,14 +68,27 @@ object DiffDataframe {
     for (columnName <- otherColumnsWithoutIgnored) {
       val firstIndexOfColumn = fieldNames.indexOf(columnName)
       val lastIndexOfColumn = fieldNames.indexOf(columnName, firstIndexOfColumn + 1)
-      val data = row.get(firstIndexOfColumn)
-      val data2 = row.get(lastIndexOfColumn)
-      if (data != data2) {
-        if ((data.isInstanceOf[Array[Byte]]) && (data2.isInstanceOf[Array[Byte]])) {
-          if (data.asInstanceOf[Array[Byte]].deep != data2.asInstanceOf[Array[Byte]].deep) {
+      val o1 = row.get(firstIndexOfColumn)
+      val o2 = row.get(lastIndexOfColumn)
+      o1 match {
+        case b1: Array[Byte] =>
+          if (!o2.isInstanceOf[Array[Byte]] ||
+            !java.util.Arrays.equals(b1, o2.asInstanceOf[Array[Byte]])) {
             return true
           }
-        } else {
+        case f1: Float if java.lang.Float.isNaN(f1) =>
+          if (!o2.isInstanceOf[Float] || !java.lang.Float.isNaN(o2.asInstanceOf[Float])) {
+            return true
+          }
+        case d1: Double if java.lang.Double.isNaN(d1) =>
+          if (!o2.isInstanceOf[Double] || !java.lang.Double.isNaN(o2.asInstanceOf[Double])) {
+            return true
+          }
+        case d1: java.math.BigDecimal if o2.isInstanceOf[java.math.BigDecimal] =>
+          if (d1.compareTo(o2.asInstanceOf[java.math.BigDecimal]) != 0) {
+            return true
+          }
+        case _ => if (o1 != o2) {
           return true
         }
       }

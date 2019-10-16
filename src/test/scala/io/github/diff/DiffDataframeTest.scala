@@ -116,8 +116,8 @@ class DiffDataframeTest extends FunSuite {
     val short: Short = 1
     val int: Int = 1
     val long: Long = 1
-    val float: Float = 1
-    val double: Double = 1
+    val float: Float = Float.NaN
+    val double: Double = Double.NaN
 
 
     val values = Seq(
