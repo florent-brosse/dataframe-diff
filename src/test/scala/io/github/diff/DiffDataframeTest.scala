@@ -1,14 +1,19 @@
 package io.github.diff
 
-import org.apache.spark.sql.types._
-import org.apache.spark.sql.{Row, SparkSession}
+import java.sql.{Date, Timestamp}
+
+import org.apache.spark.sql.SparkSession
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 
-case class Data(num :Int, data :String)
+case class Data(num: Int, data: String)
 
-case class Data2(num :Int, map :Map[String,String])
+case class Data2(num: Int, map: Map[String, String])
+
+case class Stru(s: Option[S])
+
+case class S(a: Option[String], b: Option[java.sql.Date], c: Option[java.sql.Timestamp], d: Option[Float])
 
 
 @RunWith(classOf[JUnitRunner])
@@ -113,29 +118,29 @@ class DiffDataframeTest extends FunSuite {
 
 
     val values = Seq(
-      (8, byte, short, int, long, float, double, new java.math.BigDecimal(1), "test", Array[String]("192", "168"),Array[Byte](192.toByte, 168.toByte, 1, 9)
+      (8, byte, short, int, long, float, double, new java.math.BigDecimal(1), "test", Array[String]("192", "168"), Array[Byte](192.toByte, 168.toByte, 1, 9)
         , false, new java.sql.Timestamp(1), new java.sql.Date(1), Seq("tre", "tr"), Map("test" -> "value"), Data(1, "hello"))
     )
 
     val values2 = Seq(
-      (8, byte, short, int, long, float, double, new java.math.BigDecimal(1), "test", Array[String]("192", "168"),Array[Byte](192.toByte, 168.toByte, 1, 8)
+      (8, byte, short, int, long, float, double, new java.math.BigDecimal(1), "test", Array[String]("192", "168"), Array[Byte](192.toByte, 168.toByte, 1, 8)
         , false, new java.sql.Timestamp(1), new java.sql.Date(1), Seq("tre", "tr"), Map("test" -> "value"), Data(1, "hello"))
     )
 
     val valuesDF = values.toDF()
     val values2DF = values2.toDF()
 
-    val (newRows, deleteRows, updateRows) = DiffDataframe.diff(values.toDF(),values.toDF(), pks)
+    val (newRows, deleteRows, updateRows) = DiffDataframe.diff(values.toDF(), values.toDF(), pks)
     assert(newRows.count() === 0)
     assert(deleteRows.count() === 0)
     assert(updateRows.count() === 0)
 
-    val (newRows2, deleteRows2, updateRows2) = DiffDataframe.diff(valuesDF,values2DF, pks)
+    val (newRows2, deleteRows2, updateRows2) = DiffDataframe.diff(valuesDF, values2DF, pks)
     assert(newRows2.count() === 0)
     assert(deleteRows2.count() === 0)
     assert(updateRows2.count() === 1)
 
-    val (newRows3, deleteRows3, updateRows3) = DiffDataframe.diffWithIgnoredColumns(valuesDF,values2DF, pks,Set("_16"))
+    val (newRows3, deleteRows3, updateRows3) = DiffDataframe.diffWithIgnoredColumns(valuesDF, values2DF, pks, Set("_16"))
     assert(newRows3.count() === 0)
     assert(deleteRows3.count() === 0)
     assert(updateRows3.count() === 1)
@@ -155,38 +160,38 @@ class DiffDataframeTest extends FunSuite {
     val pks = Set("_1")
 
     val values = Seq(
-      (8, Map("test" -> "value"),Map("test" -> "value"), Data(1, "hello"))
+      (8, Map("test" -> "value"), Map("test" -> "value"), Data(1, "hello"))
     )
 
     val values2 = Seq(
-      (8, Map("test" -> "value"),Map("test" -> "value2"), Data(1, "hello"))
+      (8, Map("test" -> "value"), Map("test" -> "value2"), Data(1, "hello"))
     )
 
     val valuesDF = values.toDF()
     val values2DF = values2.toDF()
 
-    val (newRows, deleteRows, updateRows) = DiffDataframe.diff(valuesDF,values2DF, pks)
+    val (newRows, deleteRows, updateRows) = DiffDataframe.diff(valuesDF, values2DF, pks)
     assert(newRows.count() === 0)
     assert(deleteRows.count() === 0)
     assert(updateRows.count() === 1)
 
     val values3 = Seq(
-      (8, Map("test" -> "value"),Map("test" -> "value"), Data(1, "hello"))
+      (8, Map("test" -> "value"), Map("test" -> "value"), Data(1, "hello"))
     )
 
     val values4 = Seq(
-      (8, Map("test" -> "value2"),Map("test" -> "value2"), Data(1, "hello"))
+      (8, Map("test" -> "value2"), Map("test" -> "value2"), Data(1, "hello"))
     )
 
     val values3DF = values3.toDF()
     val values4DF = values4.toDF()
 
-    val (newRows2, deleteRows2, updateRows2) = DiffDataframe.diff(values3DF,values4DF, pks)
+    val (newRows2, deleteRows2, updateRows2) = DiffDataframe.diff(values3DF, values4DF, pks)
     assert(newRows2.count() === 0)
     assert(deleteRows2.count() === 0)
     assert(updateRows2.count() === 1)
 
-    val (newRows3, deleteRows3, updateRows3) = DiffDataframe.diff(values4.toDF(),values4.toDF(), pks)
+    val (newRows3, deleteRows3, updateRows3) = DiffDataframe.diff(values4.toDF(), values4.toDF(), pks)
     assert(newRows3.count() === 0)
     assert(deleteRows3.count() === 0)
     assert(updateRows3.count() === 0)
@@ -206,22 +211,22 @@ class DiffDataframeTest extends FunSuite {
     val pks = Set("_1")
 
     val values = Seq(
-      (8, Map("test" -> "value"),Map("test" -> "value"), Data2(1, Map("hello"-> "data")))
+      (8, Map("test" -> "value"), Map("test" -> "value"), Data2(1, Map("hello" -> "data")))
     )
 
     val values2 = Seq(
-      (8, Map("test" -> "value"),Map("test" -> "value"), Data2(1, Map("hello"-> "data2")))
+      (8, Map("test" -> "value"), Map("test" -> "value"), Data2(1, Map("hello" -> "data2")))
     )
 
     val valuesDF = values.toDF()
     val values2DF = values2.toDF()
 
-    val (newRows, deleteRows, updateRows) = DiffDataframe.diff(valuesDF,values2DF, pks)
+    val (newRows, deleteRows, updateRows) = DiffDataframe.diff(valuesDF, values2DF, pks)
     assert(newRows.count() === 0)
     assert(deleteRows.count() === 0)
     assert(updateRows.count() === 1)
 
-    val (newRows2, deleteRows2, updateRows2) = DiffDataframe.diff(valuesDF,valuesDF, pks)
+    val (newRows2, deleteRows2, updateRows2) = DiffDataframe.diff(valuesDF, valuesDF, pks)
     assert(newRows2.count() === 0)
     assert(deleteRows2.count() === 0)
     assert(updateRows2.count() === 0)
@@ -250,14 +255,75 @@ class DiffDataframeTest extends FunSuite {
     val valuesDF = values.toDF("id")
     val values2DF = values2.toDF("id")
 
-    val (newRows, deleteRows, updateRows) = DiffDataframe.diff(valuesDF,values2DF, pks)
+    val (newRows, deleteRows, updateRows) = DiffDataframe.diff(valuesDF, values2DF, pks)
     assert(newRows.count() === 1)
     assert(deleteRows.count() === 1)
     assert(updateRows.count() === 0)
 
-    val (newRows2, deleteRows2, updateRows2) = DiffDataframe.diff(valuesDF,valuesDF, pks)
+    val (newRows2, deleteRows2, updateRows2) = DiffDataframe.diff(valuesDF, valuesDF, pks)
     assert(newRows2.count() === 0)
     assert(deleteRows2.count() === 0)
     assert(updateRows2.count() === 0)
   }
+
+  test("test with complex struct") {
+
+    val spark = SparkSession.builder()
+      .master("local[*]")
+      .config("spark.ui.enabled", "false")
+      .getOrCreate()
+
+    spark.sparkContext.setLogLevel("ERROR")
+    val time = System.currentTimeMillis()
+    val b4 = Seq(("data", new Stru(Option(S(Option("a"), Option(new Date(time)), Option(new Timestamp(time)), Option(1))))))
+    val b5 = Seq(("data", new Stru(Option(S(Option("a"), Option(new Date(time)), Option(new Timestamp(time)), Option(1))))))
+
+
+    val (newRows, deleteRows, updateRows) = DiffDataframe.diff(b4.toDF("id", "s"), b5.toDF("id", "s"), Set("id"))
+    assert(newRows.count() === 0)
+    assert(deleteRows.count() === 0)
+    assert(updateRows.count() === 1)
+
+  }
+
+  test("test with all types and complex") {
+
+    val spark = SparkSession.builder()
+      .master("local[*]")
+      .config("spark.ui.enabled", "false")
+      .getOrCreate()
+
+    spark.sparkContext.setLogLevel("ERROR")
+
+    import spark.implicits._
+
+    val pks = Set("_1")
+
+    val byte: Byte = 1
+    val short: Short = 1
+    val int: Int = 1
+    val long: Long = 1
+    val float: Float = 1
+    val double: Double = 1
+
+    val time = long
+    val values = Seq(
+      (8, byte, short, int, long, float, double, new java.math.BigDecimal(1), "test", Array[String]("192", "168"), Array[Byte](192.toByte, 168.toByte, 1, 9)
+        , false, new java.sql.Timestamp(1), new java.sql.Date(1), Seq("tre", "tr"), Map("test" -> "value"), new Stru(Option(S(Option("a"), Option(new Date(time)), Option(new Timestamp(time)), Option(1)))))
+    )
+
+    val values2 = Seq(
+      (8, byte, short, int, long, float, double, new java.math.BigDecimal(1), "test", Array[String]("192", "168"), Array[Byte](192.toByte, 168.toByte, 1, 9)
+        , false, new java.sql.Timestamp(1), new java.sql.Date(1), Seq("tre", "tr"), Map("test" -> "value"), new Stru(Option(S(Option("a"), Option(new Date(time)), Option(new Timestamp(time)), Option(1)))))
+    )
+
+    val (newRows, deleteRows, updateRows) = DiffDataframe.diff(values.toDF(), values2.toDF(), pks)
+    assert(newRows.count() === 0)
+    assert(deleteRows.count() === 0)
+    assert(updateRows.count() === 0)
+
+
+  }
+
+
 }
