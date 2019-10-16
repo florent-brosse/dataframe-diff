@@ -272,17 +272,18 @@ class DiffDataframeTest extends FunSuite {
       .master("local[*]")
       .config("spark.ui.enabled", "false")
       .getOrCreate()
+    import spark.implicits._
 
     spark.sparkContext.setLogLevel("ERROR")
     val time = System.currentTimeMillis()
-    val b4 = Seq(("data", new Stru(Option(S(Option("a"), Option(new Date(time)), Option(new Timestamp(time)), Option(1))))))
-    val b5 = Seq(("data", new Stru(Option(S(Option("a"), Option(new Date(time)), Option(new Timestamp(time)), Option(1))))))
+    val b4 = Seq((("data", new Stru(Option(S(Option("a"), Option(new Date(time)), Option(new Timestamp(time)), Option(1)))))))
+    val b5 = Seq((("data", new Stru(Option(S(Option("a"), Option(new Date(time)), Option(new Timestamp(time)), Option(1)))))))
 
 
     val (newRows, deleteRows, updateRows) = DiffDataframe.diff(b4.toDF("id", "s"), b5.toDF("id", "s"), Set("id"))
     assert(newRows.count() === 0)
     assert(deleteRows.count() === 0)
-    assert(updateRows.count() === 1)
+    assert(updateRows.count() === 0)
 
   }
 
@@ -317,10 +318,22 @@ class DiffDataframeTest extends FunSuite {
         , false, new java.sql.Timestamp(1), new java.sql.Date(1), Seq("tre", "tr"), Map("test" -> "value"), new Stru(Option(S(Option("a"), Option(new Date(time)), Option(new Timestamp(time)), Option(1)))))
     )
 
+    val values3 = Seq(
+      (8, byte, short, int, long, float, double, new java.math.BigDecimal(1), "test", Array[String]("192", "168"), Array[Byte](192.toByte, 168.toByte, 1, 9)
+        , false, new java.sql.Timestamp(1), new java.sql.Date(1), Seq("tre", "tr"), Map("test" -> "value"), new Stru(Option(S(Option("a"), Option(new Date(time)), Option(new Timestamp(time)), Option(2)))))
+    )
+
     val (newRows, deleteRows, updateRows) = DiffDataframe.diff(values.toDF(), values2.toDF(), pks)
     assert(newRows.count() === 0)
     assert(deleteRows.count() === 0)
     assert(updateRows.count() === 0)
+
+    val (newRows2, deleteRows2, updateRows2) = DiffDataframe.diff(values.toDF(), values3.toDF(), pks)
+    assert(newRows2.count() === 0)
+    assert(deleteRows2.count() === 0)
+    assert(updateRows2.count() === 1)
+    assert(updateRows2.collect().deep == values3.toDF().collect().deep)
+    assert(updateRows2.collect().deep != values.toDF().collect().deep)
 
 
   }

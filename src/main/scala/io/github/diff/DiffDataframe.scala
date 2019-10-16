@@ -9,8 +9,6 @@ object DiffDataframe {
    * df2 is the new dataframe
    * pks is the set of the primary keys
    *
-   * If df1 and df2 have a column name with a dot it will be replace by a underscore
-   * equality on MapStruct does not work with Dataframe so this type is compared separately
    *
    */
   def diff(df1: DataFrame, df2: DataFrame, pks: Set[String]) = {
@@ -24,14 +22,12 @@ object DiffDataframe {
    * pks is the set of the primary keys
    * ignoreColumns is the set of ignore column during the compare
    *
-   * If df1 and df2 have a column name with a dot it will be replace by a underscore
-   * equality on MapStruct does not work with Dataframe so this type is compared separately
    *
    */
   def diffWithIgnoredColumns(df1: DataFrame, df2: DataFrame, pks: Set[String], ignoreColumns: Set[String]) = {
-    val dfOld = df1.toDF(df1.columns.map(_.replaceAll("\\.|\\s+", "_").toLowerCase): _*).alias("old")
+    val dfOld = df1.alias("old")
 
-    val dfNew = df2.toDF(df2.columns.map(_.replaceAll("\\.|\\s+", "_").toLowerCase): _*).alias("new")
+    val dfNew = df2.alias("new")
 
 
     assert(!pks.isEmpty)
