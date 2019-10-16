@@ -26,3 +26,9 @@ val (newRows, deleteRows, updateRows) = DiffDataframe.diff(values.toDF("id", "id
 To lanch test with maven
 `JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/ PATH=$JAVA_HOME/bin:$PATH mvn clean test`
 
+release
+`JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/ PATH=$JAVA_HOME/bin:$PATH  /opt/apache-maven-3.6.0/bin/mvn release:prepare`
+`JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/ PATH=$JAVA_HOME/bin:$PATH  /opt/apache-maven-3.6.0/bin/mvn release:perform`
+and https://oss.sonatype.org/#stagingRepositories
+close and release
+
