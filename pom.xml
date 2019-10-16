@@ -10,7 +10,8 @@
 
 
     <name>${project.artifactId}</name>
-    <description>It takes 2 dataframes and a list of string corresponding to the primary keys and compute 3 dataframes: the new rows, the deleted rows and the updated rows</description>
+    <description>It takes 2 dataframes and a list of string corresponding to the primary keys and compute 3 dataframes: the new rows, the deleted rows and the updated rows
+    </description>
     <url>https://github.com/florent-brosse/dataframe-diff</url>
 
 
@@ -21,6 +22,8 @@
         <spark.version>2.3.2</spark.version>
         <scalatest.version>3.0.0</scalatest.version>
         <junit.version>4.12</junit.version>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
 
     <dependencies>

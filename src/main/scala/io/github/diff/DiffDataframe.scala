@@ -40,21 +40,21 @@ object DiffDataframe {
     assert(ignoreColumns subsetOf otherColumns)
     val otherColumnsWithoutIgnored = otherColumns diff ignoreColumns
 
-    val columnPk = pks.map(colName => dfOld("old." + colName) === dfNew("new." + colName))
+    val columnPk = pks.map(colName => dfOld(s"`${colName}`") === dfNew(s"`${colName}`"))
     val joinPkCol = columnPk.reduce((a, b) => a.and(b))
 
     val cached = dfOld.join(dfNew, joinPkCol, "full_outer")
 
-    val columnPkIsNullOld = pks.map(colName => cached("old." + colName) isNull)
+    val columnPkIsNullOld = pks.map(colName => cached(s"old.`${colName}`") isNull)
     val pkColIsNullOld = columnPkIsNullOld.reduce((a, b) => a.and(b))
 
-    val columnPkIsNullNew = pks.map(colName => cached("new." + colName) isNull)
+    val columnPkIsNullNew = pks.map(colName => cached(s"new.`${colName}`") isNull)
     val pkColIsNullNew = columnPkIsNullNew.reduce((a, b) => a.and(b))
 
 
     val newRows = cached.filter(pkColIsNullOld).select("new.*")
 
-    val deleteRows = cached.filter(pkColIsNullNew).select("old.*").select(pksSeq.head, pksSeq.tail: _*)
+    val deleteRows = cached.filter(pkColIsNullNew).select("old.*").select(s"`${pksSeq.head}`", pksSeq.tail.map(f => s"`${f}`"): _*)
 
     val samePkRows = cached.filter(joinPkCol)
     val updateRows: Dataset[Row] = samePkRows.filter(filterCustom(_)(otherColumnsWithoutIgnored))

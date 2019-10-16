@@ -30,7 +30,7 @@ class DiffDataframeTest extends FunSuite {
 
     import spark.implicits._
 
-    val pks = Set("id", "id2")
+    val pks = Set("i.d", "i D.2")
 
     val values = Seq(
       (8, 1, "bat", "2"),
@@ -44,16 +44,19 @@ class DiffDataframeTest extends FunSuite {
       (-27, 1, "horse", "3")
     )
 
-    val (newRows, deleteRows, updateRows) = DiffDataframe.diff(values.toDF("id", "id2", "w.ord", "d ata"), values2.toDF("id", "id2", "w.ord", "d ata"), pks)
+    val (newRows, deleteRows, updateRows) = DiffDataframe.diff(values.toDF("i.d", "i D.2", "W.ord", "d ata"), values2.toDF("i.d", "i D.2", "W.ord", "d ata"), pks)
 
-    val newRowsExpected = Seq((63, 1, "mouse", "2")).toDF("id", "id2", "w_ord", "d_ata")
-    assert(newRowsExpected.collect() sameElements newRows.collect())
+    val newRowsExpected = Seq((63, 1, "mouse", "2")).toDF("i.d", "i D.2", "W.ord", "d ata")
+    assert(newRowsExpected.schema.fields.map(_.name).deep == newRows.schema.fields.map(_.name).deep)
+    assert(newRowsExpected.collect().deep == newRows.collect().deep)
 
-    val deleteRowsExpected = Seq((64, 1)).toDF("id", "id2")
-    assert(deleteRowsExpected.collect() sameElements deleteRows.collect())
+    val deleteRowsExpected = Seq((64, 1)).toDF("i.d", "i D.2")
+    assert(deleteRowsExpected.schema.fields.map(_.name).deep == deleteRows.schema.fields.map(_.name).deep)
+    assert(deleteRowsExpected.collect().deep == deleteRows.collect().deep)
 
-    val updateRowsExpected = Seq((8, 1, "bat", "1")).toDF("id", "id2", "w_ord", "d_ata")
-    assert(updateRowsExpected.collect() sameElements updateRows.collect())
+    val updateRowsExpected = Seq((8, 1, "bat", "1")).toDF("i.d", "i D.2", "W.ord", "d ata")
+    assert(updateRowsExpected.schema.fields.map(_.name).deep == updateRows.schema.fields.map(_.name).deep)
+    assert(updateRowsExpected.collect().deep == updateRows.collect().deep)
   }
   test("test with ignored columns") {
 
@@ -86,13 +89,13 @@ class DiffDataframeTest extends FunSuite {
 
     val (newRows, deleteRows, updateRows) = DiffDataframe.diffWithIgnoredColumns(values.toDF("id", "id2", "w.ord", "d ata"), values2.toDF("id", "id2", "w.ord", "d ata"), pks, ignoredColumns)
 
-    val newRowsExpected = Seq((63, 1, "mouse", "2")).toDF("id", "id2", "w_ord", "d_ata")
+    val newRowsExpected = Seq((63, 1, "mouse", "2")).toDF("id", "id2", "w.ord", "d ata")
     assert(newRowsExpected.collect() sameElements newRows.collect())
 
     val deleteRowsExpected = Seq((64)).toDF("id")
     assert(deleteRowsExpected.collect() sameElements deleteRows.collect())
 
-    val updateRowsExpected = Seq((8, 1, "bat", "1")).toDF("id", "id2", "w_ord", "d_ata")
+    val updateRowsExpected = Seq((8, 1, "bat", "1")).toDF("id", "id2", "w.ord", "d ata")
     assert(updateRowsExpected.collect() sameElements updateRows.collect())
   }
 
