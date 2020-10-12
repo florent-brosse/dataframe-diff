@@ -19,7 +19,7 @@
         <scala.main.version>2.11</scala.main.version>
         <spark.version>2.3.2</spark.version>
         <scalatest.version>3.0.0</scalatest.version>
-        <junit.version>4.12</junit.version>
+        <junit.version>4.13.1</junit.version>
         <java.version>1.8</java.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
